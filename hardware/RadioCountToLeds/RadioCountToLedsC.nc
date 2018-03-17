@@ -101,86 +101,67 @@ implementation {
 	return;
       }
 
-      rcm->counter = 0;
+		rcm->counter = 0;
 
 
-rcm->payload1 = 0;
-rcm->payload2 = 0;
-rcm->payload3 = 0;
-rcm->payload4 = 0;
-rcm->payload5 = 0;
-
-rcm->payload6 = 0;
-
-rcm->payload7 = 0;
-rcm->payload8 = 0;
-rcm->payload9 = 0;
-
-rcm->payload10 = 0;
-rcm->payload11 = 0;
-rcm->payload12 = 0;
-
-rcm->payload13 = 0;
-rcm->payload14 = 0;
-rcm->payload15 = 0;
-rcm->payload16 = 0;
-rcm->payload17 = 0;
-rcm->payload18 = 0;
-
-rcm->payload19 = 0;
-rcm->payload20 = 0;
-rcm->payload21 = 0;
-rcm->payload22 = 0;
-rcm->payload23 = 0;
-rcm->payload24 = 0;
-
-rcm->payload25 = 0;
-rcm->payload26 = 0;
-rcm->payload27 = 0;
-rcm->payload28 = 0;
+		rcm->payload1 = 0;
+		rcm->payload2 = 0;
+		rcm->payload3 = 0;
+		rcm->payload4 = 0;
+		rcm->payload5 = 0;
+		
+		rcm->payload6 = 0;
+		
+		rcm->payload7 = 0;
+		rcm->payload8 = 0;
+		rcm->payload9 = 0;
+		
+		rcm->payload10 = 0;
+		rcm->payload11 = 0;
+		rcm->payload12 = 0;
+		
+		rcm->payload13 = 0;
+		rcm->payload14 = 0;
+		rcm->payload15 = 0;
+		rcm->payload16 = 0;
+		rcm->payload17 = 0;
+		rcm->payload18 = 0;
+		
+		rcm->payload19 = 0;
+		rcm->payload20 = 0;
+		rcm->payload21 = 0;
+		rcm->payload22 = 0;
+		rcm->payload23 = 0;
+		rcm->payload24 = 0;
+		
+		rcm->payload25 = 0;
+		rcm->payload26 = 0;
+		rcm->payload27 = 0;
+		rcm->payload28 = 0;
 
 
       if (call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(radio_count_msg_t)) == SUCCESS) {
-	dbg("RadioCountToLedsC", "RadioCountToLedsC: packet sent.\n", counter);	
-	call Leds.led0Toggle();
-	locked = TRUE;
+		dbg("RadioCountToLedsC", "RadioCountToLedsC: packet sent.\n", counter);	
+		call Leds.led0Toggle();
+		locked = TRUE;
       }
     }
   }
 
-  event message_t* Receive.receive(message_t* bufPtr, 
-				   void* payload, uint8_t len) {
-    dbg("RadioCountToLedsC", "Received packet of length %hhu.\n", len);
-    if (len != sizeof(radio_count_msg_t)) {return bufPtr;}
-    else {
-      radio_count_msg_t* rcm = (radio_count_msg_t*)payload;
-      if (rcm->counter & 0x1) {
-	call Leds.led0On();
-      }
-      else {
-	call Leds.led0Off();
-      }
-      if (rcm->counter & 0x2) {
-	call Leds.led1On();
-      }
-      else {
-	call Leds.led1Off();
-      }
-      if (rcm->counter & 0x4) {
-	call Leds.led2On();
-      }
-      else {
-	call Leds.led2Off();
-      }
-      return bufPtr;
-    }
-  }
+	event message_t* Receive.receive(message_t* bufPtr, void* payload, uint8_t len) {
+    	dbg("RadioCountToLedsC", "Received packet of length %hhu.\n", len);
+	    if (len == sizeof(radio_count_msg_t)){
+			radio_count_msg_t* rcm = (radio_count_msg_t*)payload;
+			call Leds.set(rcm->counter);
+	    }
+		return bufPtr;
+	}
 
-  event void AMSend.sendDone(message_t* bufPtr, error_t error) {
-    if (&packet == bufPtr) {
-      locked = FALSE;
-    }
-  }
+	event void AMSend.sendDone(message_t* bufPtr, error_t error) {
+    	if (&packet == bufPtr) {
+			locked = FALSE;
+	    }
+	}
 
 }
 
