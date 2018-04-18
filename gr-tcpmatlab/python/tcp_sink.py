@@ -83,6 +83,7 @@ class TCPServer(threading.Thread):
         self.accept = False
         self.sess = None
 
+        self.remain = ''
     def run(self):
         while True:
             if not self.accept:
@@ -96,7 +97,16 @@ class TCPServer(threading.Thread):
                 self.accept = False
                 self.sess = None
                 continue
+
+
+            #Packet Fragmentation and Assembly for TCP
+            data = self.remain + data
             data = data.split(self.split)
-            for d in data:
+
+            # for example, assume there are two packet("111", "222") to be delivered,
+            # if recv data = "111%222%" , then  we will get ['111', '222', ''] after spliting;
+            # if recv data = "111%22",    then  ['111', '22'], 
+            for d in data[:-1]:  
                 self.putter.put(d)
-                #print(self.putter.qsize())
+            self.remain = data[-1] 
+                
